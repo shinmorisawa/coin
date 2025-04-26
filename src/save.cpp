@@ -17,8 +17,8 @@ void saveFile(save save) {
 	if (saveFile.is_open()) {
 		saveFile.write(save.magic.data(), save.magic.size());
 		saveFile.write(save.version.data(), save.version.size());
-		saveFile.write(reinterpret_cast<char*>(&save.coins.base), sizeof(save.coins.base));
-		saveFile.write(reinterpret_cast<char*>(&save.coins.mult), sizeof(save.coins.mult));
+		saveFile.write(reinterpret_cast<char*>(&save.coins.up), sizeof(save.coins.up));
+		saveFile.write(reinterpret_cast<char*>(&save.coins.down), sizeof(save.coins.down));
 
 		size_t pets_size = save.pets.size();
 		saveFile.write(reinterpret_cast<const char*>(&pets_size), sizeof(pets_size));

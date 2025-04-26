@@ -2,8 +2,8 @@
 #define BIG_HPP
 
 struct big {
-	long long base;
-	long long mult;
+	long long up;
+	long long down;
 };
 
 #endif
