@@ -6,10 +6,7 @@
 #include "big.hpp"
 
 struct save {
-	std::array<char, 8> magic;
-	std::array<char, 4> version;
 	big coins;	
-	std::vector<int> pets;
 };
 
 void saveFile(save save);

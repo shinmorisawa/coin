@@ -15,18 +15,8 @@ void saveFile(save save) {
 	std::ofstream saveFile(savePath);
 	
 	if (saveFile.is_open()) {
-		saveFile.write(save.magic.data(), save.magic.size());
-		saveFile.write(save.version.data(), save.version.size());
 		saveFile.write(reinterpret_cast<char*>(&save.coins.base), sizeof(save.coins.base));
 		saveFile.write(reinterpret_cast<char*>(&save.coins.mult), sizeof(save.coins.mult));
-
-		size_t pets_size = save.pets.size();
-		saveFile.write(reinterpret_cast<const char*>(&pets_size), sizeof(pets_size));
-
-		for (int pet: save.pets) {
-			saveFile.write(reinterpret_cast<const char*>(&pet), sizeof(pet));
-		}
-		
 		saveFile.close();
 	}
 }
