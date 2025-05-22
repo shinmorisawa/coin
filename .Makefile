@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Os -std=c++20
+CXXFLAGS = -Ilib -Iinclude -Os -std=c++23
 TARGET = coin
 SRC = $(wildcard src/*.cpp)
 
