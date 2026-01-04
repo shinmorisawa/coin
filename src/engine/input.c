@@ -1,12 +1,14 @@
+#include <stdio.h>
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_events.h>
 #include "engine/input.h"
+#include "engine/render.h"
 
 extern bool running;
 
 static InputState input;
 
-void engine_input() {
+void engine_input(void) {
     SDL_Event e;
     while (SDL_PollEvent(&e)) {
         switch (e.type) {
@@ -30,10 +32,16 @@ void engine_input() {
             case SDL_EVENT_KEY_UP:
                 input.keys[e.key.scancode] = false;
                 break;
+            case SDL_EVENT_WINDOW_RESIZED:
+                int w = e.window.data1;
+                int h = e.window.data2;
+                printf("[engine/input.resize] %dx%d\n", w, h);
+                render_resize(w, h);
+                break;
         }
     }
 }
 
-InputState* engine_input_get() {
+InputState* engine_input_get(void) {
     return &input;
 }

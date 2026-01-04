@@ -9,6 +9,7 @@
 #include "engine/render.h"
 #include "engine/ecs.h"
 #include "engine/ecs/storage.h"
+#include "engine/shader.h"
 
 Vertex vertices[] = {
     // back face (-z)
@@ -99,9 +100,8 @@ void rotation_callback(InputState* input, float dt) {
     angle += angular_speed * dt;
 }
 
-extern unsigned int emission_shader;
-
 void mesh_callback(void) {
+    Shader diffuse = shader_load_base("diffuse");
     Mesh m = mesh_create(vertices, sizeof(vertices), sizeof(vertices) / sizeof(Vertex));
     Transform t = {
         .x = -0.8f,
@@ -117,7 +117,7 @@ void mesh_callback(void) {
         .sz = 1
     };
 
-    m.shader.shader = emission_shader;
+    m.shader = diffuse;
     meshes[1] = m;
     transforms[1] = t;
     has_mesh[1] = true;
@@ -138,7 +138,7 @@ void mesh_callback(void) {
         .sz = 1
     };
 
-    m2.shader.shader = emission_shader;
+    m2.shader = diffuse;
     meshes[2] = m2;
     transforms[2] = t2;
     has_mesh[2] = true;
@@ -187,15 +187,13 @@ void camera_callback(InputState* input, float dt) {
         camera.z -= right.z * speed;
     }
 
-    /*
     if (input->keys[SDL_SCANCODE_E]) {
-        camera.y += speed * dt;
+        camera.y += speed;
     }
 
     if (input->keys[SDL_SCANCODE_Q]) {
-        camera.y -= speed * dt;
+        camera.y -= speed;
     }
-    */
 
     if (input->keys[SDL_SCANCODE_LEFT]) {
         camera.ry += r_speed * dt;

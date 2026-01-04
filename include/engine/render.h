@@ -11,6 +11,7 @@ void engine_render(void);
 void render_view_matrix(void);
 void renderer_draw_mesh(Transform t, Mesh m);
 Mesh mesh_create(const Vertex* vertices, size_t vertex_size, int vertex_count);
+void render_resize(int w, int h);
 
 /* render_math.c */
 void mat4_mul(float out[16], const float a[16], const float b[16]);

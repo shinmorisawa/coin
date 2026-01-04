@@ -6,6 +6,7 @@ srcs = srcs + files(
   'render.c',
   'render_math.c',
   'update.c',
+  'shader.c'
 )
 
 subdir('ecs')

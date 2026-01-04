@@ -10,6 +10,7 @@ typedef struct {
 
 typedef struct Shader {
     unsigned int shader;
+    int model_loc, view_loc, projection_loc, camera_position_loc;
 } Shader;
 
 typedef uint32_t Entity;
