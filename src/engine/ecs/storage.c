@@ -6,3 +6,5 @@ bool has_transform[MAX_ENTITIES];
 
 Mesh meshes[MAX_ENTITIES];
 bool has_mesh[MAX_ENTITIES];
+
+Camera camera;

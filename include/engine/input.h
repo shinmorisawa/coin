@@ -5,7 +5,7 @@
 typedef struct InputState {
     bool left_mouse_pressed;
     bool right_mouse_pressed;
-    bool keys[256];
+    bool keys[1024];
     int mouse_x, mouse_y;
 } InputState;
 

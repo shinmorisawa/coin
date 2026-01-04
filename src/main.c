@@ -1,6 +1,8 @@
 #include <SDL3/SDL_pixels.h>
+#include <SDL3/SDL_scancode.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <math.h>
 #include "engine/init.h"
 #include "engine/input.h"
 #include "engine/update.h"
@@ -8,49 +10,54 @@
 #include "engine/ecs.h"
 #include "engine/ecs/storage.h"
 
-float vertices[] = {
-    // positions       
-   -0.5f, -0.5f, -0.5f,
-    0.5f, -0.5f, -0.5f,
-    0.5f,  0.5f, -0.5f,
-    0.5f,  0.5f, -0.5f,
-   -0.5f,  0.5f, -0.5f,
-   -0.5f, -0.5f, -0.5f,
+Vertex vertices[] = {
+    // back face (-z)
+    {{-0.5f, -0.5f, -0.5f}, { 0,  0, -1}, {0, 0}},
+    {{ 0.5f, -0.5f, -0.5f}, { 0,  0, -1}, {1, 0}},
+    {{ 0.5f,  0.5f, -0.5f}, { 0,  0, -1}, {1, 1}},
+    {{ 0.5f,  0.5f, -0.5f}, { 0,  0, -1}, {1, 1}},
+    {{-0.5f,  0.5f, -0.5f}, { 0,  0, -1}, {0, 1}},
+    {{-0.5f, -0.5f, -0.5f}, { 0,  0, -1}, {0, 0}},
 
-   -0.5f, -0.5f,  0.5f,
-    0.5f, -0.5f,  0.5f,
-    0.5f,  0.5f,  0.5f,
-    0.5f,  0.5f,  0.5f,
-   -0.5f,  0.5f,  0.5f,
-   -0.5f, -0.5f,  0.5f,
+    // front face (+z)
+    {{-0.5f, -0.5f,  0.5f}, { 0,  0,  1}, {0, 0}},
+    {{ 0.5f, -0.5f,  0.5f}, { 0,  0,  1}, {1, 0}},
+    {{ 0.5f,  0.5f,  0.5f}, { 0,  0,  1}, {1, 1}},
+    {{ 0.5f,  0.5f,  0.5f}, { 0,  0,  1}, {1, 1}},
+    {{-0.5f,  0.5f,  0.5f}, { 0,  0,  1}, {0, 1}},
+    {{-0.5f, -0.5f,  0.5f}, { 0,  0,  1}, {0, 0}},
 
-   -0.5f,  0.5f,  0.5f,
-   -0.5f,  0.5f, -0.5f,
-   -0.5f, -0.5f, -0.5f,
-   -0.5f, -0.5f, -0.5f,
-   -0.5f, -0.5f,  0.5f,
-   -0.5f,  0.5f,  0.5f,
+    // left face (-x)
+    {{-0.5f,  0.5f,  0.5f}, {-1,  0,  0}, {1, 0}},
+    {{-0.5f,  0.5f, -0.5f}, {-1,  0,  0}, {1, 1}},
+    {{-0.5f, -0.5f, -0.5f}, {-1,  0,  0}, {0, 1}},
+    {{-0.5f, -0.5f, -0.5f}, {-1,  0,  0}, {0, 1}},
+    {{-0.5f, -0.5f,  0.5f}, {-1,  0,  0}, {0, 0}},
+    {{-0.5f,  0.5f,  0.5f}, {-1,  0,  0}, {1, 0}},
 
-    0.5f,  0.5f,  0.5f,
-    0.5f,  0.5f, -0.5f,
-    0.5f, -0.5f, -0.5f,
-    0.5f, -0.5f, -0.5f,
-    0.5f, -0.5f,  0.5f,
-    0.5f,  0.5f,  0.5f,
+    // right face (+x)
+    {{ 0.5f,  0.5f,  0.5f}, { 1,  0,  0}, {1, 0}},
+    {{ 0.5f,  0.5f, -0.5f}, { 1,  0,  0}, {1, 1}},
+    {{ 0.5f, -0.5f, -0.5f}, { 1,  0,  0}, {0, 1}},
+    {{ 0.5f, -0.5f, -0.5f}, { 1,  0,  0}, {0, 1}},
+    {{ 0.5f, -0.5f,  0.5f}, { 1,  0,  0}, {0, 0}},
+    {{ 0.5f,  0.5f,  0.5f}, { 1,  0,  0}, {1, 0}},
 
-   -0.5f, -0.5f, -0.5f,
-    0.5f, -0.5f, -0.5f,
-    0.5f, -0.5f,  0.5f,
-    0.5f, -0.5f,  0.5f,
-   -0.5f, -0.5f,  0.5f,
-   -0.5f, -0.5f, -0.5f,
+    // bottom face (-y)
+    {{-0.5f, -0.5f, -0.5f}, { 0, -1,  0}, {0, 1}},
+    {{ 0.5f, -0.5f, -0.5f}, { 0, -1,  0}, {1, 1}},
+    {{ 0.5f, -0.5f,  0.5f}, { 0, -1,  0}, {1, 0}},
+    {{ 0.5f, -0.5f,  0.5f}, { 0, -1,  0}, {1, 0}},
+    {{-0.5f, -0.5f,  0.5f}, { 0, -1,  0}, {0, 0}},
+    {{-0.5f, -0.5f, -0.5f}, { 0, -1,  0}, {0, 1}},
 
-   -0.5f,  0.5f, -0.5f,
-    0.5f,  0.5f, -0.5f,
-    0.5f,  0.5f,  0.5f,
-    0.5f,  0.5f,  0.5f,
-   -0.5f,  0.5f,  0.5f,
-   -0.5f,  0.5f, -0.5f,
+    // top face (+y)
+    {{-0.5f,  0.5f, -0.5f}, { 0,  1,  0}, {0, 1}},
+    {{ 0.5f,  0.5f, -0.5f}, { 0,  1,  0}, {1, 1}},
+    {{ 0.5f,  0.5f,  0.5f}, { 0,  1,  0}, {1, 0}},
+    {{ 0.5f,  0.5f,  0.5f}, { 0,  1,  0}, {1, 0}},
+    {{-0.5f,  0.5f,  0.5f}, { 0,  1,  0}, {0, 0}},
+    {{-0.5f,  0.5f, -0.5f}, { 0,  1,  0}, {0, 1}},
 };
 
 void cool_callback(InputState* input, float dt) {
@@ -65,13 +72,25 @@ Entity e = 1;
 void rotation_callback(InputState* input, float dt) {
     (void)input;
     float rad = angle * (PI / 180.0f);
-    transforms[e] = (Transform) {
-        .x = 0,
+    transforms[1] = (Transform) {
+        .x = -0.8f,
         .y = 0,
         .z = 0,
         .rx = rad,
         .ry = rad,
         .rz = rad,
+        .sx = 1,
+        .sy = 1,
+        .sz = 1,
+    };
+
+    transforms[2] = (Transform) {
+        .x = 0.8f,
+        .y = 0,
+        .z = 0,
+        .rx = -rad,
+        .ry = -rad,
+        .rz = -rad,
         .sx = 1,
         .sy = 1,
         .sz = 1,
@@ -83,9 +102,9 @@ void rotation_callback(InputState* input, float dt) {
 extern unsigned int emission_shader;
 
 void mesh_callback(void) {
-    Mesh m = mesh_create(vertices, sizeof(vertices), (sizeof(vertices) / sizeof(float)) / 3);
+    Mesh m = mesh_create(vertices, sizeof(vertices), sizeof(vertices) / sizeof(Vertex));
     Transform t = {
-        .x = 0,
+        .x = -0.8f,
         .y = 0,
         .z = 0,
 
@@ -99,12 +118,100 @@ void mesh_callback(void) {
     };
 
     m.shader.shader = emission_shader;
-    meshes[e] = m;
-    transforms[e] = t;
-    has_mesh[e] = true;
-    has_transform[e] = true;
+    meshes[1] = m;
+    transforms[1] = t;
+    has_mesh[1] = true;
+    has_transform[1] = true;
+
+    Mesh m2 = mesh_create(vertices, sizeof(vertices), sizeof(vertices) / sizeof(Vertex));
+    Transform t2 = {
+        .x = 0.8f,
+        .y = 0,
+        .z = 0,
+
+        .rx = 0,
+        .ry = 0,
+        .rz = 0,
+
+        .sx = 1,
+        .sy = 1,
+        .sz = 1
+    };
+
+    m2.shader.shader = emission_shader;
+    meshes[2] = m2;
+    transforms[2] = t2;
+    has_mesh[2] = true;
+    has_transform[2] = true;
 
     fprintf(stdout, "[game/mesh] loaded meshes\n");
+}
+
+void camera_callback(InputState* input, float dt) {
+    float speed = 5.0f * dt;
+    float r_speed = PI / 2;
+
+    vec3 forward = {
+        -sinf(camera.ry) * cosf(camera.rx),
+        sinf(camera.rx),
+        -cosf(camera.ry) * cosf(camera.rx)
+    };
+
+    vec3 right = {
+        cosf(camera.ry),
+        0.0f,
+        -sinf(camera.ry)
+    };
+
+    if (input->keys[SDL_SCANCODE_W]) {
+        camera.x += forward.x * speed;
+        camera.y += forward.y * speed;
+        camera.z += forward.z * speed;
+    }
+    
+    if (input->keys[SDL_SCANCODE_S]) {
+        camera.x -= forward.x * speed;
+        camera.y -= forward.y * speed;
+        camera.z -= forward.z * speed;
+    }
+
+    if (input->keys[SDL_SCANCODE_D]) {
+        camera.x += right.x * speed;
+        camera.y += right.y * speed;
+        camera.z += right.z * speed;
+    }
+
+    if (input->keys[SDL_SCANCODE_A]) {
+        camera.x -= right.x * speed;
+        camera.y -= right.y * speed;
+        camera.z -= right.z * speed;
+    }
+
+    /*
+    if (input->keys[SDL_SCANCODE_E]) {
+        camera.y += speed * dt;
+    }
+
+    if (input->keys[SDL_SCANCODE_Q]) {
+        camera.y -= speed * dt;
+    }
+    */
+
+    if (input->keys[SDL_SCANCODE_LEFT]) {
+        camera.ry += r_speed * dt;
+    }
+
+    if (input->keys[SDL_SCANCODE_RIGHT]) {
+        camera.ry -= r_speed * dt;
+    }
+
+    if (input->keys[SDL_SCANCODE_UP]) {
+        camera.rx += r_speed * dt;
+    }
+
+    if (input->keys[SDL_SCANCODE_DOWN]) {
+        camera.rx -= r_speed * dt;
+    }
 }
 
 int main(void) {
@@ -116,6 +223,7 @@ int main(void) {
 
     engine_register_update_callback(cool_callback);
     engine_register_update_callback(rotation_callback);
+    engine_register_update_callback(camera_callback);
     engine_register_init_callback(mesh_callback);
 
     engine_init(ctx);

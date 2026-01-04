@@ -21,4 +21,3 @@ void engine_update(InputState* input, float dt) {
         update_callbacks[i](input, dt);
     }
 }
-

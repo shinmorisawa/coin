@@ -4,6 +4,10 @@
 
 #define MAX_ENTITIES 512
 
+typedef struct {
+    float x,y,z;
+} vec3;
+
 typedef struct Shader {
     unsigned int shader;
 } Shader;
@@ -25,3 +29,14 @@ typedef struct Mesh {
     int vertex_count;
     Shader shader;
 } Mesh;
+
+typedef struct Vertex {
+    float pos[3];
+    float normal[3];
+    float uv[2];
+} Vertex;
+
+typedef struct Camera {
+    float x, y, z;
+    float rx, ry, rz;
+} Camera;
