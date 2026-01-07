@@ -61,17 +61,20 @@ Vertex vertices[] = {
     {{-0.5f,  0.5f, -0.5f}, { 0,  1,  0}, {0, 1}},
 };
 
-void cool_callback(InputState* input, float dt) {
-    (void)dt;
-    // fprintf(stdout, "[game/cool_callback] mx: %d my: %d\n", input->mouse_x, input->mouse_y);
+void cool_callback(InputState* input, double dt, long long counter) {
+    (void)input;
+//    if (counter % 1000 == 0) {
+//        fprintf(stdout, "[engine/loop.FPS] %f fps\n", dt * 1000);
+//    }
 }
 
 float angle = 0;
 float angular_speed = 60.0f;
 Entity e = 1;
 
-void rotation_callback(InputState* input, float dt) {
+void rotation_callback(InputState* input, double dt, long long counter) {
     (void)input;
+    (void)counter;
     float rad = angle * (PI / 180.0f);
     transforms[1] = (Transform) {
         .x = -0.8f,
@@ -147,7 +150,8 @@ void mesh_callback(void) {
     fprintf(stdout, "[game/mesh] loaded meshes\n");
 }
 
-void camera_callback(InputState* input, float dt) {
+void camera_callback(InputState* input, double dt, long long counter) {
+    (void)counter;
     float speed = 5.0f * dt;
     float r_speed = PI / 2;
 

@@ -24,6 +24,7 @@ typedef struct Transform {
     float sx, sy, sz;
 } Transform;
 
+
 typedef struct Mesh {
     unsigned int VBO;
     unsigned int VAO;
@@ -31,6 +32,7 @@ typedef struct Mesh {
     Shader shader;
 } Mesh;
 
+/* first 3 are position, next 3 are normal vectors, next 2 are uv :) */
 typedef struct Vertex {
     float pos[3];
     float normal[3];

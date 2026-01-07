@@ -16,8 +16,8 @@ void engine_register_update_callback(UpdateCallback cb) {
     }
 }
 
-void engine_update(InputState* input, float dt) {
+void engine_update(InputState* input, double dt, long long counter) {
     for (int i = 0; i < callback_count; i++) {
-        update_callbacks[i](input, dt);
+        update_callbacks[i](input, dt, counter);
     }
 }
